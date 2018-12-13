@@ -1,7 +1,7 @@
 const Web3=require('web3-quorum');
 const ethereumTx= require('ethereumjs-tx');
 const testContractAbi= require('./build/contracts/Test.json');
-var web3 = new Web3( new Web3.providers.HttpProvider("http://172.13.0.4:8545"));
+var web3 = new Web3( new Web3.providers.HttpProvider("http://172.13.0.3:8545"));
 
 //var coinbase = web3.eth.coinbase;
 //var balance = web3.eth.getBalance(coinbase);
@@ -9,61 +9,84 @@ var web3 = new Web3( new Web3.providers.HttpProvider("http://172.13.0.4:8545"));
 //var ContractOne = artifacts.require("Test");
 //console.log(ContractOne);
 //console.log(web3.eth.getAccounts[0]);
-var TestContract = web3.eth.Contract(testContractAbi.abi,'0xa2D81f99AA4134D7cD9822018309af7F71bD4b48');
+//var TestContract = web3.eth.contract(testContractAbi.abi,'0x1b8ec7c88e46f27b21a6731811414f0f7d4d1ed0');
+const testABI= web3.eth.contract(testContractAbi.abi)
+const TestContract= testABI.at('0x8289ba6a61716530760f46554ce37dcac6a6e756');
+
 //0xabbb828dc9e098944f7579419cdf0e6a489cc429
 //0x3E82E2f50C5A743E65cceC614D78Ce210c366fcC
 //0xa2D81f99AA4134D7cD9822018309af7F71bD4b48
+//0x1b8ec7c88e46f27b21a6731811414f0f7d4d1ed0
+
+//0x0a90e1fd257452177dbd5bf130d304ab02bd7b7e
+
+//0xd6ff4fac5af84767735677b359599333ca354d1d
 
 //console.log(testContractAbi.abi);
-//TestContract.methods.getOwner().call(async (err,result)=> await console.log(result));
-function get(){
-web3.eth.personal.unlockAccount('0x59a83f92034da597b815debb45d4e8bd215763ee','',15000).then((response) => {
-TestContract.methods.getRO().call({from:'0x59a83f92034da597b815debb45d4e8bd215763ee'},async (err,result)=> await console.log(result));
-}).catch((error)=>{
-  console.log(error);
-});
-}
-//get();
+//0x59da5f2df6ceaedf0af211ac51b3637d8e0b9504
 
+//0xd16ee3304a8c24be848707894efe7d051bcd0cf6
 
+//0x8289ba6a61716530760f46554ce37dcac6a6e756
 
 function setnew(){
-  TestContract.methods.setRO("testPriv").send({from: '0x35d5214de23f9b5ae50f6bf7846ed3f9525b7566',gas: 1500000,privateFor:['VmGTZXbTDsM3mr0Il8dkj4saP7pzhG8VQagJ3hLmtXM=']})
-  .then(function(receipt){
-      // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
-      console.log(receipt);
-  });
+  console.log(TestContract);
+  TestContract.setRO('newdatabyn1',{from: '0x296d1d0dc699a49d7bf83ff58ed617098fe648cb',gas: 1500000,privateFor:['5R23cAKrPoPnpVfB48LpJHsH2IlRtXkGR2Z7HjhvUhY=']},(err,result)=>{
+    if(err) console.log(err);
+    else console.log(result);
+  }); 
 }
 
 //setnew();
 
-//1 - 0x296d1d0dc699a49d7bf83ff58ed617098fe648cb
-//2 - 13c439bf92eebc88bf7c88ae7ac306a7442d3756
+//1- 0x296d1d0dc699a49d7bf83ff58ed617098fe648cb
+//2- 0x13c439bf92eebc88bf7c88ae7ac306a7442d3756
 //3- 0x35d5214de23f9b5ae50f6bf7846ed3f9525b7566
 
+// Node 1 public key: egJw3TVCcEUvxdOQ6Dw5qhuRbj+AkSgpt4XF0KNgnwA=
+// Node 2 public key: VmGTZXbTDsM3mr0Il8dkj4saP7pzhG8VQagJ3hLmtXM=
+// Node 3 public key: 5R23cAKrPoPnpVfB48LpJHsH2IlRtXkGR2Z7HjhvUhY=
+
 function getnew(){
-  TestContract.methods.getRO().call({from:'0x296d1d0dc699a49d7bf83ff58ed617098fe648cb'},(err,result)=> { 
+  TestContract.getRO.call({},(err,result)=> { 
     if(err) console.log(err);
     else console.log(result)});
 }
 
-//getnew();
-
+getnew();
+//createContract();
+//,privateFor:['VmGTZXbTDsM3mr0Il8dkj4saP7pzhG8VQagJ3hLmtXM=']
 //console.log(testContractAbi.bytecode);
 function createContract(){
-  const newContract = new web3.eth.Contract(testContractAbi.abi);
-  newContract.options.data =testContractAbi.bytecode;
-  newContract.deploy().send({from: '0x35d5214de23f9b5ae50f6bf7846ed3f9525b7566',gas: 1500000,privateFor:['VmGTZXbTDsM3mr0Il8dkj4saP7pzhG8VQagJ3hLmtXM=']})
-  .then((e, contract)=>{
-      if(e) console.log(e);
-      else if(!contract.address) console.log(contract.transactionHash);
-      else console.log("Address is "+contract.address);
-    // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
-      //console.log(receipt);
+  const newContract = web3.eth.contract(testContractAbi.abi);
+  newContract.new({data:testContractAbi.bytecode,from: '0x296d1d0dc699a49d7bf83ff58ed617098fe648cb',gas: 1500000,privateFor:['5R23cAKrPoPnpVfB48LpJHsH2IlRtXkGR2Z7HjhvUhY=']},function(e, contract) {
+    if (e) {
+      console.log("err creating contract", e);
+    } else {
+      if (!contract.address) {
+        console.log("Contract transaction send: TransactionHash: " + contract.transactionHash + " waiting to be mined...");
+      } else {
+        console.log("Contract mined! Address: " + contract.address);
+        console.log(contract);
+      }
+    }
   });
+  
+  
+  //newContract.options.data =testContractAbi.bytecode;
+  // newContract.deploy().send({from: '0x35d5214de23f9b5ae50f6bf7846ed3f9525b7566',gas: 1500000,privateFor:['VmGTZXbTDsM3mr0Il8dkj4saP7pzhG8VQagJ3hLmtXM=']})
+  // .then((e, contract)=>{
+  //     if(e) console.log(e);
+  //     else if(!contract.address) console.log(contract.transactionHash);
+  //     else console.log("Address is "+contract.address);
+  //   // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
+  //     //console.log(receipt);
+  // });
 }
 
-createContract();
+
+
+
 
 
 // Node 1 public key: egJw3TVCcEUvxdOQ6Dw5qhuRbj+AkSgpt4XF0KNgnwA=
@@ -83,6 +106,8 @@ createContract();
 // 	}
 // });
 
+
+
 function set(){
 web3.eth.personal.unlockAccount('0x59a83f92034da597b815debb45d4e8bd215763ee','',15000).then((response) => {
   console.log(response);
@@ -96,6 +121,17 @@ web3.eth.personal.unlockAccount('0x59a83f92034da597b815debb45d4e8bd215763ee','',
 });
 }
 //set();
+
+//TestContract.methods.getOwner().call(async (err,result)=> await console.log(result));
+function get(){
+  web3.eth.personal.unlockAccount('0x59a83f92034da597b815debb45d4e8bd215763ee','',15000).then((response) => {
+  TestContract.methods.getRO().call({from:'0x59a83f92034da597b815debb45d4e8bd215763ee'},async (err,result)=> await console.log(result));
+  }).catch((error)=>{
+    console.log(error);
+  });
+  }
+  //get();
+
 
 ///RDHUQGqgEtD/63YzD7Jn1YtxOcKqfLG+0cWssWlfQo=
 
